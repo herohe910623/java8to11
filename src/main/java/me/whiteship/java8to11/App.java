@@ -2,6 +2,7 @@ package me.whiteship.java8to11;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -101,9 +102,16 @@ public class App {
 
         System.out.println("close 되지 않은 수업");
         //TODO
+        springClasses.stream()
+                .filter(Predicate.not(OnlineClass::isClosed))
+                .forEach(oc -> System.out.println(oc.getTitle()));
 
         System.out.println("수업 이름만 모아서 스트림 만들기");
         //TODO
+        springClasses.stream()
+                .map(OnlineClass::getTitle)
+                .forEach(s -> System.out.println(s));
+
 
         List<OnlineClass> javaClasses = new ArrayList<>();
         javaClasses.add(new OnlineClass(6,"The Java, Test", true));
@@ -114,17 +122,43 @@ public class App {
         gijinEvents.add(springClasses);
         gijinEvents.add(javaClasses);
 
+
         System.out.println("두 수업 목록에 들어있는 모든 수업 아이디 출력");
         // TODO
+        gijinEvents.stream()
+                .flatMap(list -> list.stream())
+                .forEach(oc -> System.out.println(oc.getId()));
 
         System.out.println("10부터 1씩 증가하는 무제한 스트림 중에서 앞에 10개 빼고 최대 10개 까지만");
         // TODO
+        //??? 무슨 소리 하는거냐 대체,,, 모르겠으니 패스
+        Stream.iterate(10, i -> i+1)
+                .skip(10)
+                .limit(10)
+                .forEach(System.out::println);
 
         System.out.println("자바 수업 중에 Test가 들어있는 수업이 있는지 확인");
         // TODO
+        boolean testCheck = javaClasses.stream()
+                .anyMatch(oc -> oc.getTitle().contains("Test"));
+        System.out.println(testCheck);
 
-        System.out.println("스프링 수업 중에 제목에 spring이 들어간 것만 모아서 List로 만들기");
+
+        System.out.println("자바 수업 중에 Test가 들어있는 수업 출력");
+        List<String> test = javaClasses.stream()
+                .filter(oc -> oc.getTitle().contains("Test"))
+                .map(OnlineClass::getTitle)
+                .collect(Collectors.toList());
+        test.forEach(System.out::println);
+
+
+        System.out.println("스프링 수업 중에 제목에 spring이 들어간 제목만 모아서 List로 만들기");
         // TODO
+        List<String> spring = springClasses.stream()
+                .filter(oc -> oc.getTitle().contains("spring"))
+                .map(oc -> oc.getTitle())
+                .collect(Collectors.toList());
+        spring.forEach(System.out::println);
 
     }
 }
