@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class App {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
 
 //        //인스턴스 메소드 참조
 //        Greeting greeting = new Greeting();
@@ -256,8 +256,8 @@ public class App {
 //        System.out.println(thread + " is finished");
 //    }
 
-        System.out.println("**** 15: Executors *****");
-
+//        System.out.println("**** 15: Executors *****");
+//
 //        ExecutorService executorService = Executors.newSingleThreadExecutor(); //1
 //        ExecutorService executorService = Executors.newFixedThreadPool(2); //2
 //        executorService.submit(getRunnable("Hello"));
@@ -266,18 +266,60 @@ public class App {
 //        executorService.submit(getRunnable("Pool"));
 //        executorService.shutdown();
 
-        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-//        scheduledExecutorService.schedule(getRunnable("Hello"),3, TimeUnit.SECONDS);
-        scheduledExecutorService.scheduleAtFixedRate(getRunnable("World"),1,3,TimeUnit.SECONDS);
-    }
+//        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(); //3
+////        scheduledExecutorService.schedule(getRunnable("Hello"),3, TimeUnit.SECONDS);
+//        scheduledExecutorService.scheduleAtFixedRate(getRunnable("World"),1,3,TimeUnit.SECONDS);
+//    }
+//
+//    private static Runnable getRunnable(String message) {
+//        return () -> {
+//            System.out.println(message + Thread.currentThread().getName());
+//        };
 
-    private static Runnable getRunnable(String message) {
-        return () -> {
-            System.out.println(message + Thread.currentThread().getName());
+        System.out.println("***** 16: Callable과 Future *****");
+
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+
+        //Callable을 한꺼번에 던질수 있다.
+        Callable<String> hello = () -> {
+            Thread.sleep(2000L);
+            return "Hello";
         };
+        Callable<String> java = () -> {
+            Thread.sleep(3000L);
+            return "Java";
+        };
+        Callable<String> gijin = () -> {
+            Thread.sleep(1000L);
+            return "GiJin";
+        };
+        //invokeAll 은 3개의 시간이 다 끝날때 전부 가져온다. 2
+//        List<Future<String>> futures = executorService.invokeAll(Arrays.asList(hello, java, gijin));
+//        for(Future<String> f : futures) {
+//            System.out.println(f.get());
+//        }
+        //invokeAny 는 3개의 시간 중 빨리 끝난것을 가져온다.
+        // Executors.newSingleThreadExecutor(); 는 쓰레드가 하나라서 hello가 출력되버림
+        String s = executorService.invokeAny(Arrays.asList(hello, java, gijin));
+        System.out.println(s); //가장 짧은게 출력된다.
 
+        executorService.shutdown();
+//        //1
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//
+//        Callable<String> hello = () -> {
+//            Thread.sleep(2000L);
+//           return "Hello";
+//        };
+//        Future<String> helloFuture = executorService.submit(hello);
+//        System.out.println(helloFuture.isDone());
+//        System.out.println("Started !! ");
+//        helloFuture.get(); //이곳에서 결과값을 기다리기 때문에 Blocking Call 이라 한다.
+////        helloFuture.cancel(false); //중단시킨다. Done은 True가 된다. 아래에서 get을 한다면 에러가 뜬다.
+//        System.out.println(helloFuture.isDone());
+//        System.out.println("End !! ");
 
-
+//        executorService.shutdown();
     }
 
 
