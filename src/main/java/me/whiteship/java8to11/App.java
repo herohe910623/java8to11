@@ -275,52 +275,100 @@ public class App {
 //        return () -> {
 //            System.out.println(message + Thread.currentThread().getName());
 //        };
-
-        System.out.println("***** 16: Callable과 Future *****");
-
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
-
-        //Callable을 한꺼번에 던질수 있다.
-        Callable<String> hello = () -> {
-            Thread.sleep(2000L);
-            return "Hello";
-        };
-        Callable<String> java = () -> {
-            Thread.sleep(3000L);
-            return "Java";
-        };
-        Callable<String> gijin = () -> {
-            Thread.sleep(1000L);
-            return "GiJin";
-        };
-        //invokeAll 은 3개의 시간이 다 끝날때 전부 가져온다. 2
-//        List<Future<String>> futures = executorService.invokeAll(Arrays.asList(hello, java, gijin));
-//        for(Future<String> f : futures) {
-//            System.out.println(f.get());
-//        }
-        //invokeAny 는 3개의 시간 중 빨리 끝난것을 가져온다.
-        // Executors.newSingleThreadExecutor(); 는 쓰레드가 하나라서 hello가 출력되버림
-        String s = executorService.invokeAny(Arrays.asList(hello, java, gijin));
-        System.out.println(s); //가장 짧은게 출력된다.
-
-        executorService.shutdown();
-//        //1
-//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        System.out.println("***** 16: Callable과 Future *****");
 //
+//        ExecutorService executorService = Executors.newFixedThreadPool(5);
+//
+//        //Callable을 한꺼번에 던질수 있다.
 //        Callable<String> hello = () -> {
 //            Thread.sleep(2000L);
-//           return "Hello";
+//            return "Hello";
 //        };
-//        Future<String> helloFuture = executorService.submit(hello);
-//        System.out.println(helloFuture.isDone());
-//        System.out.println("Started !! ");
-//        helloFuture.get(); //이곳에서 결과값을 기다리기 때문에 Blocking Call 이라 한다.
-////        helloFuture.cancel(false); //중단시킨다. Done은 True가 된다. 아래에서 get을 한다면 에러가 뜬다.
-//        System.out.println(helloFuture.isDone());
-//        System.out.println("End !! ");
-
+//        Callable<String> java = () -> {
+//            Thread.sleep(3000L);
+//            return "Java";
+//        };
+//        Callable<String> gijin = () -> {
+//            Thread.sleep(1000L);
+//            return "GiJin";
+//        };
+//        //invokeAll 은 3개의 시간이 다 끝날때 전부 가져온다. 2
+////        List<Future<String>> futures = executorService.invokeAll(Arrays.asList(hello, java, gijin));
+////        for(Future<String> f : futures) {
+////            System.out.println(f.get());
+////        }
+//        //invokeAny 는 3개의 시간 중 빨리 끝난것을 가져온다. 3
+//        // Executors.newSingleThreadExecutor(); 는 쓰레드가 하나라서 hello가 출력되버림
+//        String s = executorService.invokeAny(Arrays.asList(hello, java, gijin));
+//        System.out.println(s); //가장 짧은게 출력된다.
+//
 //        executorService.shutdown();
+////        //1
+////        ExecutorService executorService = Executors.newSingleThreadExecutor();
+////
+////        Callable<String> hello = () -> {
+////            Thread.sleep(2000L);
+////           return "Hello";
+////        };
+////        Future<String> helloFuture = executorService.submit(hello);
+////        System.out.println(helloFuture.isDone());
+////        System.out.println("Started !! ");
+////        helloFuture.get(); //이곳에서 결과값을 기다리기 때문에 Blocking Call 이라 한다.
+//////        helloFuture.cancel(false); //중단시킨다. Done은 True가 된다. 아래에서 get을 한다면 에러가 뜬다.
+////        System.out.println(helloFuture.isDone());
+////        System.out.println("End !! ");
+//
+////        executorService.shutdown();
+        System.out.println("**** 17: CompleTableFuture 1 *****");
+//////////        ExecutorService executorService = Executors.newFixedThreadPool(5); //1
+//////////        Future<String> future = executorService.submit(() -> "hello");
+//////////        //get이 블락킹콜 이기 때문에 이전에서 TODO를 하곤 하는데,
+//////////        future.get();
+////////
+////////        //CompleTalbeFuture 를 사용하여 Executor를 명시하지 않고도 사용할수 있다.
+////////        CompletableFuture<String> future = new CompletableFuture<>();
+////////        future.complete("gijin");
+////////        System.out.println(future.get()); //get은 써야한다.
+//////        //==위에거와 같다.
+//////        CompletableFuture<String> future = CompletableFuture.completedFuture("hello");
+//////        System.out.println(future.get());
+////
+////        //리턴이 없는 작업시에는 runAsync 사용 2
+////        CompletableFuture<Void> runAsync = CompletableFuture.runAsync(() -> {
+////            System.out.println("runAsync : " + Thread.currentThread().getName());
+////        });
+////        runAsync.get();
+////        //리턴값이 있는 작업시에는 supplyAsync 사용
+////        CompletableFuture<String> supplyAsync = CompletableFuture.supplyAsync(() -> {
+////            System.out.println("supplyAsync : " + Thread.currentThread().getName());
+////            return "Thread";
+////        }).thenApply((s) -> { //callback 콜백이 가능하다 리턴값이 있는 콜백 3
+////            System.out.println(Thread.currentThread().getName());
+////            return s.toUpperCase();
+////        });
+////        System.out.println(supplyAsync.get());
+//
+//        CompletableFuture<Void> supplyAsync = CompletableFuture.supplyAsync(() -> {
+//            System.out.println("Hello :" + Thread.currentThread().getName());
+//            return "Hello";
+//        }).thenAccept((s) -> { //thenAccept 는 리턴없이 없는 콜백 4
+//            System.out.println(Thread.currentThread().getName());
+//            System.out.println(s.toUpperCase());
+//        });
+//        supplyAsync.get();
+
+        CompletableFuture<Void> callBackThenRun = CompletableFuture.supplyAsync(() -> {
+            System.out.println("Hello :" + Thread.currentThread().getName());
+            return "Hello";
+        }).thenRun(() -> { //thenRun 는 그냥 하기만 하면 된다. 결과값에 상관하지 않는다. 5
+            System.out.println(Thread.currentThread().getName());
+        });
+        callBackThenRun.get();
+        // 자바7부터 별다른 Executor 를 사용하여 ThreadPool을 생성하지 않아도 내부적으로 ForkJoinPool에 있는 commonPool을 쓰게 된다.
+        //원한다면 만들어서 줄수도 있다. CompletableFuture.supplyAsync(() -> { },excutorService); 같은 형식 executionService.shutdown 필요
+        //CallBack도 마찬가지로 thenRunAsync(() -> { },executorService); 와 같은 형식으로 쓰레드를 사용할수 있다. executionService.shutdown 필요
     }
+
 
 
 //    static class MyThread extends Thread { //Hello 가 실행된다음에 Thread가 실행된다. Thread의 순서는 보장못한다.
