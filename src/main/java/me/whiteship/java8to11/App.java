@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -183,42 +184,112 @@ public class App {
 //        Optional<Progress> progress = spring_boot.getProgress();
 //        progress.ifPresent(p -> System.out.println(p.getStudyDuration()));
 //
+//
+//        System.out.println("***** 12. Date와 Time API 소개 *****");
+//
+//        Calendar gijinBirthDay = new GregorianCalendar(1991, Calendar.JULY, 23);
+//        System.out.println(gijinBirthDay.getTime());
+//        gijinBirthDay.add(Calendar.DAY_OF_YEAR,1);
+//        System.out.println(gijinBirthDay.getTime());
+//
+//        LocalDateTime now = LocalDateTime.now();
+//        LocalDateTime gijinBirthDay2 = LocalDateTime.of(1991, 6, 23, 0, 0);
+//        Duration duration = Duration.between(now, gijinBirthDay2);
+//        System.out.println(duration + " Duration");
+//
+//        LocalDate now2 = LocalDate.now();
+//        LocalDate gijinBirthDay3 = LocalDate.of(1991, 6, 23);
+//        Period period = Period.between(now2, gijinBirthDay3);
+//        System.out.println(period + " Period");
+//
+//        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+//        System.out.println(zonedDateTime);
+//
+//        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
+//        System.out.println(zonedDateTime.format(timeFormatter));
+//
+//        Instant instant = Instant.now();
+//        System.out.println(instant.atZone(ZoneId.of("Asia/Seoul")));
+//
+//        Calendar gisungBirthDay = new GregorianCalendar(1988, Calendar.NOVEMBER, 8);
+//        System.out.println(gisungBirthDay.getTime());
 
-        System.out.println("***** 12. Date와 Time API 소개 *****");
+//        System.out.println("******14. CompletableFuture");
+//        MyThread myThread = new MyThread();
+//        myThread.start();
+//
+//        System.out.println("Hello" + Thread.currentThread().getName());
+//
+//        Thread thread = new Thread(() -> {
+////            try {
+////                Thread.sleep(1000L); //재웠기때문에 믿에 main 스레드인 Hello가 먼저 찍힌다.
+////            } catch (InterruptedException e) {
+////                e.printStackTrace();
+////            }
+//
+//            //다른 스레드 깨우기
+////            while(true) {
+////                System.out.println("Thread : " + Thread.currentThread().getName());
+////                try {
+////                    Thread.sleep(1000L);
+////                } catch (InterruptedException e) {
+////                    System.out.println("exit!");
+////                    return;
+////                }
+////            }
+////        });
+//            //Thread.sleep(3000L);
+//            //thread.interrupt();
+//
+//            System.out.println("Thread : " + Thread.currentThread().getName());
+//            try {
+//                Thread.sleep(3000L);
+//            } catch (InterruptedException e) {
+//                //
+//                throw new IllegalStateException(e);
+//            }
+//        });
+//        thread.start();
+//
+//        System.out.println("Hello: "+ Thread.currentThread().getName());
+//        thread.join(); //3초 스레드가 끝날때까지 기다린다.
+//        System.out.println(thread + " is finished");
+//    }
 
-        Calendar gijinBirthDay = new GregorianCalendar(1991, Calendar.JULY, 23);
-        System.out.println(gijinBirthDay.getTime());
-        gijinBirthDay.add(Calendar.DAY_OF_YEAR,1);
-        System.out.println(gijinBirthDay.getTime());
+        System.out.println("**** 15: Executors *****");
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime gijinBirthDay2 = LocalDateTime.of(1991, 6, 23, 0, 0);
-        Duration duration = Duration.between(now, gijinBirthDay2);
-        System.out.println(duration + " Duration");
+//        ExecutorService executorService = Executors.newSingleThreadExecutor(); //1
+//        ExecutorService executorService = Executors.newFixedThreadPool(2); //2
+//        executorService.submit(getRunnable("Hello"));
+//        executorService.submit(getRunnable("World"));
+//        executorService.submit(getRunnable("Thread"));
+//        executorService.submit(getRunnable("Pool"));
+//        executorService.shutdown();
 
-        LocalDate now2 = LocalDate.now();
-        LocalDate gijinBirthDay3 = LocalDate.of(1991, 6, 23);
-        Period period = Period.between(now2, gijinBirthDay3);
-        System.out.println(period + " Period");
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+//        scheduledExecutorService.schedule(getRunnable("Hello"),3, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(getRunnable("World"),1,3,TimeUnit.SECONDS);
+    }
 
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        System.out.println(zonedDateTime);
-
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MMddyyyy");
-        System.out.println(zonedDateTime.format(timeFormatter));
-
-        Instant instant = Instant.now();
-        System.out.println(instant.atZone(ZoneId.of("Asia/Seoul")));
-
-        Calendar gisungBirthDay = new GregorianCalendar(1988, Calendar.NOVEMBER, 8);
-        System.out.println(gisungBirthDay.getTime());
+    private static Runnable getRunnable(String message) {
+        return () -> {
+            System.out.println(message + Thread.currentThread().getName());
+        };
 
 
 
     }
 
-    private static OnlineClass createNewClass() {
-        System.out.println("creating new online class");
-        return new OnlineClass(10, "New Class", false);
-    }
+
+//    static class MyThread extends Thread { //Hello 가 실행된다음에 Thread가 실행된다. Thread의 순서는 보장못한다.
+//        @Override
+//        public void run() {
+//            System.out.println("Thread: " + Thread.currentThread().getName());
+//        }
+//    }
+
+//    private static OnlineClass createNewClass() {
+//        System.out.println("creating new online class");
+//        return new OnlineClass(10, "New Class", false);
+//    }
 }
