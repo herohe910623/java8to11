@@ -1,6 +1,9 @@
 package me.whiteship.java8to11;
 
+import org.springframework.core.task.support.ExecutorServiceAdapter;
+
 import javax.swing.text.html.Option;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -319,55 +322,140 @@ public class App {
 ////        System.out.println("End !! ");
 //
 ////        executorService.shutdown();
-        System.out.println("**** 17: CompleTableFuture 1 *****");
-//////////        ExecutorService executorService = Executors.newFixedThreadPool(5); //1
-//////////        Future<String> future = executorService.submit(() -> "hello");
-//////////        //get이 블락킹콜 이기 때문에 이전에서 TODO를 하곤 하는데,
-//////////        future.get();
-////////
-////////        //CompleTalbeFuture 를 사용하여 Executor를 명시하지 않고도 사용할수 있다.
-////////        CompletableFuture<String> future = new CompletableFuture<>();
-////////        future.complete("gijin");
-////////        System.out.println(future.get()); //get은 써야한다.
-//////        //==위에거와 같다.
-//////        CompletableFuture<String> future = CompletableFuture.completedFuture("hello");
-//////        System.out.println(future.get());
+//        System.out.println("**** 17: CompleTableFuture 1 *****");
+////////////        ExecutorService executorService = Executors.newFixedThreadPool(5); //1
+////////////        Future<String> future = executorService.submit(() -> "hello");
+////////////        //get이 블락킹콜 이기 때문에 이전에서 TODO를 하곤 하는데,
+////////////        future.get();
+//////////
+//////////        //CompleTalbeFuture 를 사용하여 Executor를 명시하지 않고도 사용할수 있다.
+//////////        CompletableFuture<String> future = new CompletableFuture<>();
+//////////        future.complete("gijin");
+//////////        System.out.println(future.get()); //get은 써야한다.
+////////        //==위에거와 같다.
+////////        CompletableFuture<String> future = CompletableFuture.completedFuture("hello");
+////////        System.out.println(future.get());
+//////
+//////        //리턴이 없는 작업시에는 runAsync 사용 2
+//////        CompletableFuture<Void> runAsync = CompletableFuture.runAsync(() -> {
+//////            System.out.println("runAsync : " + Thread.currentThread().getName());
+//////        });
+//////        runAsync.get();
+//////        //리턴값이 있는 작업시에는 supplyAsync 사용
+//////        CompletableFuture<String> supplyAsync = CompletableFuture.supplyAsync(() -> {
+//////            System.out.println("supplyAsync : " + Thread.currentThread().getName());
+//////            return "Thread";
+//////        }).thenApply((s) -> { //callback 콜백이 가능하다 리턴값이 있는 콜백 3
+//////            System.out.println(Thread.currentThread().getName());
+//////            return s.toUpperCase();
+//////        });
+//////        System.out.println(supplyAsync.get());
 ////
-////        //리턴이 없는 작업시에는 runAsync 사용 2
-////        CompletableFuture<Void> runAsync = CompletableFuture.runAsync(() -> {
-////            System.out.println("runAsync : " + Thread.currentThread().getName());
-////        });
-////        runAsync.get();
-////        //리턴값이 있는 작업시에는 supplyAsync 사용
-////        CompletableFuture<String> supplyAsync = CompletableFuture.supplyAsync(() -> {
-////            System.out.println("supplyAsync : " + Thread.currentThread().getName());
-////            return "Thread";
-////        }).thenApply((s) -> { //callback 콜백이 가능하다 리턴값이 있는 콜백 3
+////        CompletableFuture<Void> supplyAsync = CompletableFuture.supplyAsync(() -> {
+////            System.out.println("Hello :" + Thread.currentThread().getName());
+////            return "Hello";
+////        }).thenAccept((s) -> { //thenAccept 는 리턴없이 없는 콜백 4
 ////            System.out.println(Thread.currentThread().getName());
-////            return s.toUpperCase();
+////            System.out.println(s.toUpperCase());
 ////        });
-////        System.out.println(supplyAsync.get());
+////        supplyAsync.get();
 //
-//        CompletableFuture<Void> supplyAsync = CompletableFuture.supplyAsync(() -> {
+//        CompletableFuture<Void> callBackThenRun = CompletableFuture.supplyAsync(() -> {
 //            System.out.println("Hello :" + Thread.currentThread().getName());
 //            return "Hello";
-//        }).thenAccept((s) -> { //thenAccept 는 리턴없이 없는 콜백 4
+//        }).thenRun(() -> { //thenRun 는 그냥 하기만 하면 된다. 결과값에 상관하지 않는다. 5
 //            System.out.println(Thread.currentThread().getName());
-//            System.out.println(s.toUpperCase());
 //        });
-//        supplyAsync.get();
+//        callBackThenRun.get();
+//        // 자바7부터 별다른 Executor 를 사용하여 ThreadPool을 생성하지 않아도 내부적으로 ForkJoinPool에 있는 commonPool을 쓰게 된다.
+//        //원한다면 만들어서 줄수도 있다. CompletableFuture.supplyAsync(() -> { },excutorService); 같은 형식 executionService.shutdown 필요
+//        //CallBack도 마찬가지로 thenRunAsync(() -> { },executorService); 와 같은 형식으로 쓰레드를 사용할수 있다. executionService.shutdown 필요
+//        System.out.println("*****18.CompltableFuture 2 *****");
+//
+//////1        CompletableFuture<String> hello = CompletableFuture.supplyAsync(() -> {
+//////            System.out.println("Hello" + Thread.currentThread().getName());
+//////            return "Hello";
+//////        });
+////////        hello.get();
+////////        world.get(); 원래는 순서대로 해야되는데
+//////        //hello.thenCompose(hello 의 결과를 받아서  world를 반영하게 만들수 있다) == hello.thenCompose(App::getWorld);
+//////
+//////        CompletableFuture<String> future = hello.thenCompose(App::getWorld);
+//////        System.out.println(future.get());
+//////    }
+//////
+//////    //hello 와 동일한 world를 메소드로 만들어주었다.
+//////    private static CompletableFuture<String> getWorld(String message) {
+//////        return CompletableFuture.supplyAsync(() -> {
+//////            System.out.println("World" + Thread.currentThread().getName());
+//////            return message + " World";
+//////        });
+//////1//    }
+////
+////2        CompletableFuture<String> hello = CompletableFuture.supplyAsync(() -> {
+////            System.out.println("Hello" + Thread.currentThread().getName());
+////            return "Hello";
+////        });
+////
+////        CompletableFuture<String> world = CompletableFuture.supplyAsync(() -> {
+////            System.out.println("World" + Thread.currentThread().getName());
+////            return "World";
+////        });
+////
+////        //hello와 world를 둘다 따로 보내고 결과를 둘다 하고 싶은경우에 이렇게 BiFunction 에 해당하는 람다가 get 된다.
+////        CompletableFuture<String> future = hello.thenCombine(world, (h, w) -> h + " " + w);
+////        System.out.println(future.get());
+////
+////        //모든 서브테스트를 합처서 실행하는방법
+////        //모슨 테스크 들의 동일한 타입이라는 보장도 없고 그중에 어떤값은 에러가낫을수도 있기때문에 결과가 무의미하다
+////        //결과가 null 값이 떨어진다
+////        CompletableFuture<Void> future2 = CompletableFuture.allOf(hello, world);
+////        future2
+////                .thenAccept((result) -> {
+////                    System.out.println(result);
+////                });
+////        System.out.println(future2.get());
+////        //이걸 제대로 받으려면 콜렉션으로 모아서 할수 있긴 하다
+////        List<CompletableFuture<String>> futures = Arrays.asList(hello,world);
+////        CompletableFuture[] futuresArray = futures.toArray(new CompletableFuture[futures.size()]);
+////
+////        CompletableFuture<List<String>> future3 = CompletableFuture.allOf(futuresArray)
+////                .thenApply(v -> {
+////                    return futures.stream()
+////                            .map(CompletableFuture::join)
+////                            .collect(Collectors.toList());
+////                });
+////        future3.get().forEach(System.out::println);
+////        //이번엔 아무거나 하나 빨리 끝나는거 결과값 받아서 뭔가 하는과정 지금 같은 경우에는 랜덤하게 온다.
+////        //ThenAccept가 Return 타입이 없다
+////        CompletableFuture<Void> future4 = CompletableFuture.anyOf(hello, world).thenAccept((s) -> {
+////            System.out.println(s);
+////        });
+////        future4.get();
+////2
+//        //에러처리 시
+//        boolean throwError = true;
+//
+//        CompletableFuture<String> hello = CompletableFuture.supplyAsync(() -> {
+//            if (throwError) {
+//                throw new IllegalArgumentException();
+//            }
+//            System.out.println("Hello " + Thread.currentThread().getName());
+//            return "Hello";
+////  3-1    }).exceptionally( ex -> {
+////            System.out.println(ex);
+////            return "Error!";
+////        });
+////  3-1/   System.out.println(hello.get());
+//            //handle(정상적인경우 결과값 , exception 발생 에러)
+//            }).handle((result, ex) -> { //3-2
+//                if (ex != null) {
+//                    System.out.println(ex);
+//                    return "ERROR !";
+//                }
+//                return result;
+//        }); //3-2/
 
-        CompletableFuture<Void> callBackThenRun = CompletableFuture.supplyAsync(() -> {
-            System.out.println("Hello :" + Thread.currentThread().getName());
-            return "Hello";
-        }).thenRun(() -> { //thenRun 는 그냥 하기만 하면 된다. 결과값에 상관하지 않는다. 5
-            System.out.println(Thread.currentThread().getName());
-        });
-        callBackThenRun.get();
-        // 자바7부터 별다른 Executor 를 사용하여 ThreadPool을 생성하지 않아도 내부적으로 ForkJoinPool에 있는 commonPool을 쓰게 된다.
-        //원한다면 만들어서 줄수도 있다. CompletableFuture.supplyAsync(() -> { },excutorService); 같은 형식 executionService.shutdown 필요
-        //CallBack도 마찬가지로 thenRunAsync(() -> { },executorService); 와 같은 형식으로 쓰레드를 사용할수 있다. executionService.shutdown 필요
-    }
 
 
 
@@ -382,4 +470,5 @@ public class App {
 //        System.out.println("creating new online class");
 //        return new OnlineClass(10, "New Class", false);
 //    }
+    }
 }
