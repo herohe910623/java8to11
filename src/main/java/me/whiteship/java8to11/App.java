@@ -16,6 +16,9 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+//19.Annotation
+@Chicken("양념")
+@Chicken("마늘간장")
 public class App {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
@@ -456,7 +459,16 @@ public class App {
 //                return result;
 //        }); //3-2/
 
-
+        System.out.println("*****19.Annotation *****");
+        //2
+//        Chicken[] chickens = App.class.getAnnotationsByType(Chicken.class);
+//        Arrays.stream(chickens).forEach( c-> {
+//            System.out.println(c.value());
+//      2/  });
+        ChickenContainer chickenContainer = App.class.getAnnotation(ChickenContainer.class);
+        Arrays.stream(chickenContainer.value()).forEach(c -> {
+            System.out.println(c.value());
+        });
 
 
 //    static class MyThread extends Thread { //Hello 가 실행된다음에 Thread가 실행된다. Thread의 순서는 보장못한다.
@@ -471,4 +483,12 @@ public class App {
 //        return new OnlineClass(10, "New Class", false);
 //    }
     }
+//1
+//    static class FeelsLikeChicken<@Chicken T> {
+//        //@Target을 파라미터로 지정하였기 때문에 가능 TYPE_USE로 사용하면 모든곳에 사용 가능하다
+//        public static <@Chicken C> void print(C c) {
+//            System.out.println(c);
+//        }
+// 1/   }
+
 }
