@@ -280,13 +280,6 @@ class HelloWorld {
 ```
 5.임의 객체의 인스턴스 메소드 참조.   
 불특정 다수의 인스턴스의 메소드 참조하는 방법.   
-```java 
-class HelloWorld {
-    public static void main(String[] args) {
-        String
-    }
-}
-```
 
 Comparator 가 Functional Interface 로 바뀌어서 추상메소드는 하나지만, 여러개의 메소드들이 있다.   
 람다를 넣을수 있다. -> 메소드 레퍼런스를 쓸수 있다.   
