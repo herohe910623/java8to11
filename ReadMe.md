@@ -75,9 +75,10 @@ plus10.andThen(multiply2).apply(i);  // 입력값이 들어오면 plus10 을 수
 BiFunction<T,U,R>    
 두 개의 (T,U) 를 받아서 R 타입을 리턴하는 함수 인터페이스   
 R apply (T t, U u)   
-
 ```java 
-
+BiFunction<Integer, Integer, Integer> biFunction = (a, b) -> a + b;
+Integer apply = biFunction.apply(3, 4);
+System.out.println(apply);
 ```
 
 Consumer<T>   
